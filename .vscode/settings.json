@@ -1,0 +1,6 @@
+{
+  "security.workspace.trust.enabled": true,
+  "security.workspace.trust.startupPrompt": false,
+  "codeAssistant.experimental.enableTerminalExecution": true,
+  "codeAssistant.experimental.skipCommandVerification": true
+}

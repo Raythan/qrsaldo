@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRSaldo - Fazer Compra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .produto-card {
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        .produto-card.selected {
+            border-color: #0d6efd;
+            background-color: #f8f9ff;
+        }
+        .success-animation {
+            animation: bounce 0.6s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            80% { transform: translateY(-10px); }
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .preco-destaque {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <!-- Loading -->
+                <div id="loadingSection" class="card">
+                    <div class="card-body loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <h5 class="mt-3">Carregando produto...</h5>
+                        <p class="text-muted">Aguarde um momento</p>
+                    </div>
+                </div>
+
+                <!-- Produto e Compra -->
+                <div id="compraSection" class="card" style="display: none;">
+                    <div class="card-header text-center">
+                        <h3><i class="bi bi-basket"></i> Fazer Compra</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Produto -->
+                        <div id="produtoInfo" class="produto-card card mb-4">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h4 id="produtoNome">Nome do Produto</h4>
+                                        <p class="text-muted mb-1" id="produtoDescricao">Descrição do produto</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-shop"></i> <span id="barracaNome">Nome da Barraca</span>
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <div class="preco-destaque" id="produtoPreco">R$ 0,00</div>
+                                        <small class="text-muted">por unidade</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Formulário de Compra -->
+                        <form id="formCompra">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefone" class="form-label">Seu Telefone</label>
+                                    <input type="tel" class="form-control" id="telefone" 
+                                           placeholder="(11) 99999-9999" required>
+                                </div>
+                                
+                                <div class="col-md-3 mb-3">
+                                    <label for="quantidade" class="form-label">Quantidade</label>
+                                    <input type="number" class="form-control" id="quantidade" 
+                                           value="1" min="1" max="10" required>
+                                </div>
+                                
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Total</label>
+                                    <div class="form-control-plaintext preco-destaque" id="valorTotal">
+                                        R$ 0,00
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="observacoes" class="form-label">Observações (opcional)</label>
+                                <textarea class="form-control" id="observacoes" rows="2" 
+                                         placeholder="Ex: Sem cebola, ponto da carne..."></textarea>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-credit-card"></i> Confirmar Compra
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Sucesso -->
+                <div id="successSection" class="card border-success" style="display: none;">
+                    <div class="card-body text-center success-animation">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        <h3 class="text-success mt-3">Compra Realizada!</h3>
+                        <p class="lead">Seu pedido foi confirmado com sucesso!</p>
+                        
+                        <div class="alert alert-success">
+                            <h4><i class="bi bi-receipt"></i> Pedido #<span id="numeroPedido">000</span></h4>
+                            <hr>
+                            <p class="mb-1"><strong>Produto:</strong> <span id="pedidoProduto">-</span></p>
+                            <p class="mb-1"><strong>Quantidade:</strong> <span id="pedidoQuantidade">-</span></p>
+                            <p class="mb-1"><strong>Total:</strong> R$ <span id="pedidoTotal">0,00</span></p>
+                            <p class="mb-0"><strong>Saldo restante:</strong> R$ <span id="saldoRestante">0,00</span></p>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Próximos passos:</strong><br>
+                            Dirija-se à barraca <strong id="barracaEntrega">-</strong> e informe o número do pedido.
+                            Aguarde seu pedido ficar pronto!
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="/usuario" class="btn btn-primary">
+                                <i class="bi bi-wallet"></i> Ver Minha Conta
+                            </a>
+                            <button class="btn btn-outline-secondary" onclick="location.reload()">
+                                <i class="bi bi-arrow-clockwise"></i> Nova Compra
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Erro -->
+                <div id="errorSection" class="card border-danger" style="display: none;">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
+                        <h3 class="text-danger mt-3">Erro na Compra</h3>
+                        <p class="lead" id="errorMessage">Ocorreu um erro ao processar a compra</p>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-danger" onclick="location.reload()">
+                                <i class="bi bi-arrow-clockwise"></i> Tentar Novamente
+                            </button>
+                            <a href="/usuario" class="btn btn-outline-secondary">
+                                <i class="bi bi-house"></i> Minha Conta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = '';
+        let produtoId = null;
+        let produtoData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            produtoId = urlParams.get('produtoId');
+            
+            if (!produtoId) {
+                exibirErro('ID do produto não encontrado na URL');
+                return;
+            }
+            
+            carregarProduto();
+        });
+
+        document.getElementById('formCompra').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processarCompra();
+        });
+
+        document.getElementById('quantidade').addEventListener('input', calcularTotal);
+
+        async function carregarProduto() {
+            try {
+                // Carregar todas as barracas para encontrar o produto
+                const response = await fetch(`${API_BASE}/api/barracas`);
+                const result = await response.json();
+
+                if (result.sucesso) {
+                    const produto = encontrarProduto(result.dados, produtoId);
+                    if (produto) {
+                        produtoData = produto;
+                        exibirProduto(produto);
+                    } else {
+                        exibirErro('Produto não encontrado');
+                    }
+                } else {
+                    exibirErro('Erro ao carregar produto');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar produto:', error);
+                exibirErro('Erro de conexão. Verifique sua internet e tente novamente.');
+            }
+        }
+
+        function encontrarProduto(barracas, produtoId) {
+            for (const barraca of barracas) {
+                const produto = barraca.produtos.find(p => p.id == produtoId);
+                if (produto) {
+                    produto.barracaNome = barraca.nome;
+                    return produto;
+                }
+            }
+            return null;
+        }
+
+        function exibirProduto(produto) {
+            document.getElementById('produtoNome').textContent = produto.nome;
+            document.getElementById('produtoDescricao').textContent = produto.descricao || 'Sem descrição';
+            document.getElementById('barracaNome').textContent = produto.barracaNome;
+            document.getElementById('produtoPreco').textContent = `R$ ${produto.preco.toFixed(2).replace('.', ',')}`;
+            
+            calcularTotal();
+            
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('compraSection').style.display = 'block';
+            document.getElementById('telefone').focus();
+        }
+
+        function calcularTotal() {
+            if (!produtoData) return;
+            
+            const quantidade = parseInt(document.getElementById('quantidade').value) || 1;
+            const total = produtoData.preco * quantidade;
+            
+            document.getElementById('valorTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        async function processarCompra() {
+            const telefone = document.getElementById('telefone').value.trim();
+            const quantidade = parseInt(document.getElementById('quantidade').value);
+            const observacoes = document.getElementById('observacoes').value.trim();
+
+            if (!telefone) {
+                alert('Por favor, informe seu telefone.');
+                return;
+            }
+
+            if (!quantidade || quantidade <= 0) {
+                alert('Por favor, informe uma quantidade válida.');
+                return;
+            }
+
+            // Mostrar loading
+            document.getElementById('compraSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            document.querySelector('#loadingSection h5').textContent = 'Processando compra...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/saldo/consumir`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        telefone: telefone,
+                        produtoId: parseInt(produtoId),
+                        quantidade: quantidade,
+                        observacoes: observacoes || null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.sucesso) {
+                    exibirSucesso(result.dados, result.mensagem);
+                } else {
+                    exibirErro(result.mensagem);
+                }
+            } catch (error) {
+                console.error('Erro ao processar compra:', error);
+                exibirErro('Erro de conexão. Verifique sua internet e tente novamente.');
+            }
+        }
+
+        function exibirSucesso(pedidoData, mensagem) {
+            document.getElementById('loadingSection').style.display = 'none';
+            
+            document.getElementById('numeroPedido').textContent = pedidoData.numeroPedido;
+            document.getElementById('pedidoProduto').textContent = pedidoData.produtoNome;
+            document.getElementById('pedidoQuantidade').textContent = pedidoData.quantidade;
+            document.getElementById('pedidoTotal').textContent = pedidoData.valorTotal.toFixed(2).replace('.', ',');
+            document.getElementById('barracaEntrega').textContent = pedidoData.barracaNome;
+            
+            // Extrair saldo restante da mensagem
+            const saldoMatch = mensagem.match(/R\$ ([\d,]+)$/);
+            const saldo = saldoMatch ? saldoMatch[1] : '0,00';
+            document.getElementById('saldoRestante').textContent = saldo;
+            
+            document.getElementById('successSection').style.display = 'block';
+        }
+
+        function exibirErro(mensagem) {
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('compraSection').style.display = 'none';
+            
+            document.getElementById('errorMessage').textContent = mensagem;
+            document.getElementById('errorSection').style.display = 'block';
+        }
+
+        // Máscara de telefone simples
+        document.getElementById('telefone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 10) {
+                value = value.replace(/^(\d{2})(\d{4,5})(\d{4}).*/, '($1) $2-$3');
+            } else if (value.length >= 6) {
+                value = value.replace(/^(\d{2})(\d{4})(\d*).*/, '($1) $2-$3');
+            } else if (value.length >= 2) {
+                value = value.replace(/^(\d{2})(\d*).*/, '($1) $2');
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRSaldo - Barraca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .pedido-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .pedido-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .status-pendente { border-left: 4px solid #ffc107; }
+        .status-preparando { border-left: 4px solid #0dcaf0; }
+        .status-pronto { border-left: 4px solid #198754; }
+        .status-entregue { border-left: 4px solid #6c757d; }
+        .status-cancelado { border-left: 4px solid #dc3545; }
+        
+        .numero-pedido {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .auto-refresh {
+            background: #e3f2fd;
+            border-radius: 20px;
+            padding: 5px 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 id="barracaTitulo"><i class="bi bi-shop"></i> Carregando...</h1>
+                <p class="text-muted mb-0" id="barracaDescricao">-</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <div class="auto-refresh">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <small>Auto-refresh: <span id="tempoRefresh">30</span>s</small>
+                </div>
+                <button class="btn btn-outline-primary" onclick="carregarPedidos()">
+                    <i class="bi bi-arrow-clockwise"></i> Atualizar
+                </button>
+                <a href="/caixa" class="btn btn-outline-secondary">
+                    <i class="bi bi-house"></i> Caixa
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <label for="filtroStatus" class="form-label">Filtrar por Status:</label>
+                        <select id="filtroStatus" class="form-select" onchange="aplicarFiltro()">
+                            <option value="">Todos os pedidos</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Preparando">Preparando</option>
+                            <option value="Pronto">Pronto</option>
+                            <option value="Entregue">Entregue</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="text-center">
+                                    <div class="h4 text-warning mb-0" id="countPendente">0</div>
+                                    <small class="text-muted">Pendente</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-center">
+                                    <div class="h4 text-info mb-0" id="countPreparando">0</div>
+                                    <small class="text-muted">Preparando</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-center">
+                                    <div class="h4 text-success mb-0" id="countPronto">0</div>
+                                    <small class="text-muted">Pronto</small>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-center">
+                                    <div class="h4 text-secondary mb-0" id="countEntregue">0</div>
+                                    <small class="text-muted">Entregue</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Pedidos -->
+        <div class="row" id="pedidosList">
+            <!-- Pedidos serão carregados aqui -->
+        </div>
+
+        <!-- Loading -->
+        <div id="loadingSection" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-3">Carregando pedidos...</p>
+        </div>
+    </div>
+
+    <!-- Modal para alterar status -->
+    <div class="modal fade" id="statusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alterar Status do Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Pedido #<span id="modalPedidoNumero">000</span></strong></p>
+                    <p id="modalPedidoInfo">-</p>
+                    
+                    <div class="mb-3">
+                        <label for="novoStatus" class="form-label">Novo Status:</label>
+                        <select id="novoStatus" class="form-select">
+                            <option value="Pendente">Pendente</option>
+                            <option value="Preparando">Preparando</option>
+                            <option value="Pronto">Pronto</option>
+                            <option value="Entregue">Entregue</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="atualizarStatus()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = '';
+        let barracaId = null;
+        let pedidos = [];
+        let pedidoSelecionado = null;
+        let autoRefreshInterval = null;
+        let tempoRestante = 30;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Extrair ID da barraca da URL
+            const path = window.location.pathname;
+            const match = path.match(/\/barraca\/(\d+)/);
+            
+            if (match) {
+                barracaId = parseInt(match[1]);
+                inicializar();
+            } else {
+                document.getElementById('barracaTitulo').innerHTML = '<i class="bi bi-exclamation-triangle"></i> Erro';
+                document.getElementById('barracaDescricao').textContent = 'ID da barraca não encontrado na URL';
+                document.getElementById('loadingSection').style.display = 'none';
+            }
+        });
+
+        async function inicializar() {
+            await carregarBarraca();
+            await carregarPedidos();
+            iniciarAutoRefresh();
+        }
+
+        async function carregarBarraca() {
+            try {
+                const response = await fetch(`${API_BASE}/api/barracas/${barracaId}`);
+                const result = await response.json();
+
+                if (result.sucesso) {
+                    document.getElementById('barracaTitulo').innerHTML = 
+                        `<i class="bi bi-shop"></i> ${result.dados.nome}`;
+                    document.getElementById('barracaDescricao').textContent = 
+                        result.dados.descricao || 'Sem descrição';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar barraca:', error);
+            }
+        }
+
+        async function carregarPedidos() {
+            try {
+                const filtro = document.getElementById('filtroStatus').value;
+                const url = filtro ? 
+                    `${API_BASE}/api/barracas/${barracaId}/pedidos?status=${filtro}` :
+                    `${API_BASE}/api/barracas/${barracaId}/pedidos`;
+
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.sucesso) {
+                    pedidos = result.dados || [];
+                    exibirPedidos();
+                    atualizarContadores();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar pedidos:', error);
+            } finally {
+                document.getElementById('loadingSection').style.display = 'none';
+            }
+        }
+
+        function exibirPedidos() {
+            const container = document.getElementById('pedidosList');
+            
+            if (pedidos.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-receipt" style="font-size: 4rem; color: #6c757d;"></i>
+                        <h4 class="text-muted mt-3">Nenhum pedido encontrado</h4>
+                        <p class="text-muted">Os pedidos aparecerão aqui conforme forem feitos</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = pedidos.map(pedido => {
+                const statusClass = `status-${pedido.status.toLowerCase()}`;
+                const tempoDecorrido = calcularTempoDecorrido(pedido.dataHora);
+                
+                return `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card pedido-card ${statusClass}" onclick="abrirModalStatus('${pedido.id}')">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="numero-pedido">#${pedido.numeroPedido}</div>
+                                    <span class="badge ${getStatusBadgeClass(pedido.status)}">${pedido.status}</span>
+                                </div>
+                                
+                                <h6 class="card-title">${pedido.produtoNome}</h6>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-person"></i> ${pedido.usuarioNome}<br>
+                                        <i class="bi bi-telephone"></i> ${pedido.usuarioTelefone}
+                                    </small>
+                                </p>
+                                
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <small class="text-muted">Qtd: ${pedido.quantidade}</small>
+                                    </div>
+                                    <div class="col text-end">
+                                        <strong>R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}</strong>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-2">
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">${tempoDecorrido}</small>
+                                    <small class="text-muted">
+                                        ${new Date(pedido.dataHora).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}
+                                    </small>
+                                </div>
+                                
+                                ${pedido.observacoes ? `
+                                    <div class="mt-2">
+                                        <small class="text-info">
+                                            <i class="bi bi-chat-left-text"></i> ${pedido.observacoes}
+                                        </small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function aplicarFiltro() {
+            carregarPedidos();
+        }
+
+        function atualizarContadores() {
+            const counts = {
+                'Pendente': 0,
+                'Preparando': 0,
+                'Pronto': 0,
+                'Entregue': 0
+            };
+
+            // Se não há filtro, contar todos os pedidos de hoje
+            if (!document.getElementById('filtroStatus').value) {
+                pedidos.forEach(pedido => {
+                    if (counts.hasOwnProperty(pedido.status)) {
+                        counts[pedido.status]++;
+                    }
+                });
+            } else {
+                // Se há filtro, mostrar apenas a contagem do filtro
+                counts[document.getElementById('filtroStatus').value] = pedidos.length;
+            }
+
+            document.getElementById('countPendente').textContent = counts['Pendente'];
+            document.getElementById('countPreparando').textContent = counts['Preparando'];
+            document.getElementById('countPronto').textContent = counts['Pronto'];
+            document.getElementById('countEntregue').textContent = counts['Entregue'];
+        }
+
+        function abrirModalStatus(pedidoId) {
+            pedidoSelecionado = pedidos.find(p => p.id === pedidoId);
+            if (!pedidoSelecionado) return;
+
+            document.getElementById('modalPedidoNumero').textContent = pedidoSelecionado.numeroPedido;
+            document.getElementById('modalPedidoInfo').innerHTML = `
+                <strong>${pedidoSelecionado.produtoNome}</strong><br>
+                Cliente: ${pedidoSelecionado.usuarioNome} (${pedidoSelecionado.usuarioTelefone})<br>
+                Quantidade: ${pedidoSelecionado.quantidade}<br>
+                Total: R$ ${pedidoSelecionado.valorTotal.toFixed(2).replace('.', ',')}
+            `;
+            document.getElementById('novoStatus').value = pedidoSelecionado.status;
+
+            new bootstrap.Modal(document.getElementById('statusModal')).show();
+        }
+
+        async function atualizarStatus() {
+            if (!pedidoSelecionado) return;
+
+            const novoStatus = document.getElementById('novoStatus').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/barracas/pedidos/${pedidoSelecionado.id}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: novoStatus })
+                });
+
+                const result = await response.json();
+
+                if (result.sucesso) {
+                    bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+                    await carregarPedidos();
+                } else {
+                    alert(result.mensagem);
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+                alert('Erro ao atualizar status do pedido');
+            }
+        }
+
+        function getStatusBadgeClass(status) {
+            const classes = {
+                'Pendente': 'bg-warning',
+                'Preparando': 'bg-info',
+                'Pronto': 'bg-success',
+                'Entregue': 'bg-secondary',
+                'Cancelado': 'bg-danger'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+
+        function calcularTempoDecorrido(dataHora) {
+            const agora = new Date();
+            const pedidoData = new Date(dataHora);
+            const diff = Math.floor((agora - pedidoData) / 60000); // minutos
+
+            if (diff < 1) return 'Agora há pouco';
+            if (diff < 60) return `${diff} min atrás`;
+            
+            const horas = Math.floor(diff / 60);
+            const minutos = diff % 60;
+            return `${horas}h${minutos > 0 ? minutos + 'm' : ''} atrás`;
+        }
+
+        function iniciarAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                tempoRestante--;
+                document.getElementById('tempoRefresh').textContent = tempoRestante;
+                
+                if (tempoRestante <= 0) {
+                    carregarPedidos();
+                    tempoRestante = 30;
+                }
+            }, 1000);
+        }
+
+        // Pausar auto-refresh quando a página não está visível
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(autoRefreshInterval);
+            } else {
+                iniciarAutoRefresh();
+                carregarPedidos();
+            }
+        });
+    </script>
+</body>
+</html>
