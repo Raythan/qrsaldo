@@ -1,0 +1,28 @@
+﻿# QRSaldo v1.0.0 - Notas de LanÃ§amento
+
+Data: 18/06/2025
+
+## O que hÃ¡ de novo
+
+- Primeira versÃ£o oficial do QRSaldo
+- Sistema completo para gestÃ£o de saldo via QR Code
+- API REST com Swagger UI
+- Interfaces web para caixa, usuÃ¡rio e barracas
+- Suporte completo para funcionamento offline em rede local
+
+## Componentes
+
+- ASP.NET Core Web API (.NET 8.0)
+- Banco de dados SQLite (gerado automaticamente)
+- QR Code para crÃ©dito e consumo
+- Tokens seguros HMAC SHA256
+- Interface responsiva com Bootstrap
+
+## Como atualizar
+
+Esta Ã© a primeira versÃ£o, nÃ£o hÃ¡ necessidade de atualizaÃ§Ã£o.
+
+## Problemas conhecidos
+
+- Nenhum problema conhecido atÃ© o momento.
+

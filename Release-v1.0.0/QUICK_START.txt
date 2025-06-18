@@ -1,0 +1,22 @@
+﻿# QRSaldo - Guia RÃ¡pido de InicializaÃ§Ã£o
+
+## Como executar:
+
+1. Certifique-se de ter o .NET 8.0 SDK instalado
+2. Abra um terminal na pasta QRSaldo
+3. Execute o comando: dotnet QRSaldo.API.dll
+4. Acesse: http://localhost:5041 no navegador
+
+## PÃ¡ginas disponÃ­veis:
+
+- PÃ¡gina inicial: http://localhost:5041/
+- PÃ¡gina do caixa: http://localhost:5041/caixa.html
+- PÃ¡gina do usuÃ¡rio: http://localhost:5041/usuario.html
+- PÃ¡gina da barraca: http://localhost:5041/barraca.html
+- DocumentaÃ§Ã£o API: http://localhost:5041/swagger
+
+## ConfiguraÃ§Ã£o:
+
+- Edite o arquivo appsettings.json para personalizar configuraÃ§Ãµes
+
+Para mais informaÃ§Ãµes, consulte o README.md completo.

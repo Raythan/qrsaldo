@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRSaldo - Sistema de Saldo para Quermesses</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+        }
+        .interface-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            height: 100%;
+        }
+        .interface-card:hover {
+            transform: translateY(-10px);
+            border-color: #0d6efd;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .interface-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .how-it-works {
+            background: #f8f9fa;
+            padding: 60px 0;
+        }
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="bi bi-qr-code"></i> QRSaldo
+                    </h1>
+                    <p class="lead mb-4">
+                        Sistema completo de saldo via QR Code para quermesses e eventos.
+                        Simplifique as vendas, elimine o troco e ofereça mais praticidade aos visitantes.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#interfaces" class="btn btn-light btn-lg">
+                            <i class="bi bi-arrow-down"></i> Ver Interfaces
+                        </a>
+                        <a href="/swagger" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-code-slash"></i> Documentação API
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="bi bi-qr-code-scan" style="font-size: 15rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interfaces Section -->
+    <section id="interfaces" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Acesse as Interfaces</h2>
+                <p class="lead text-muted">Escolha a interface adequada para seu papel no evento</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Interface do Caixa -->
+                <div class="col-lg-4">
+                    <div class="card interface-card text-center h-100">
+                        <div class="card-body p-4">
+                            <div class="interface-icon text-primary">
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                            <h4 class="card-title">Interface do Caixa</h4>
+                            <p class="card-text text-muted mb-4">
+                                Para operadores de caixa gerarem tokens de crédito após receber pagamentos.
+                            </p>
+                            <ul class="feature-list text-start mb-4">
+                                <li><i class="bi bi-check-circle text-success"></i> Gerar QR Codes de crédito</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Controlar validade dos tokens</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Histórico de transações</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Relatórios de vendas</li>
+                            </ul>
+                            <a href="/caixa" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-box-arrow-in-right"></i> Acessar Caixa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interface do Usuário -->
+                <div class="col-lg-4">
+                    <div class="card interface-card text-center h-100">
+                        <div class="card-body p-4">
+                            <div class="interface-icon text-success">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <h4 class="card-title">Interface do Usuário</h4>
+                            <p class="card-text text-muted mb-4">
+                                Para visitantes do evento gerenciarem seu saldo e fazerem compras.
+                            </p>
+                            <ul class="feature-list text-start mb-4">
+                                <li><i class="bi bi-check-circle text-success"></i> Ver saldo atual</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Escanear QR para compras</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Histórico de pedidos</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Navegar pelo cardápio</li>
+                            </ul>
+                            <a href="/usuario" class="btn btn-success btn-lg w-100">
+                                <i class="bi bi-wallet2"></i> Acessar Carteira
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interface da Barraca -->
+                <div class="col-lg-4">
+                    <div class="card interface-card text-center h-100">
+                        <div class="card-body p-4">
+                            <div class="interface-icon text-warning">
+                                <i class="bi bi-shop"></i>
+                            </div>
+                            <h4 class="card-title">Interface das Barracas</h4>
+                            <p class="card-text text-muted mb-4">
+                                Para operadores das barracas controlarem pedidos e preparação.
+                            </p>
+                            <ul class="feature-list text-start mb-4">
+                                <li><i class="bi bi-check-circle text-success"></i> Lista de pedidos em tempo real</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Atualizar status dos pedidos</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Filtros por status</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Informações do cliente</li>
+                            </ul>
+                            <div class="mb-3">
+                                <select id="barracaSelect" class="form-select">
+                                    <option value="">Selecione uma barraca...</option>
+                                    <option value="1">Barraca do Pastel</option>
+                                    <option value="2">Doces da Vovó</option>
+                                    <option value="3">Churrasquinho</option>
+                                    <option value="4">Bebidas</option>
+                                </select>
+                            </div>
+                            <button onclick="acessarBarraca()" class="btn btn-warning btn-lg w-100">
+                                <i class="bi bi-list-check"></i> Acessar Barraca
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Como Funciona</h2>
+                <p class="lead text-muted">Processo simples e seguro em 4 passos</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-3 text-center">
+                    <div class="step-number">1</div>
+                    <h5>Cliente Paga</h5>
+                    <p class="text-muted">
+                        Cliente paga em dinheiro no caixa central e recebe um QR Code com o valor creditado
+                    </p>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    <div class="step-number">2</div>
+                    <h5>Escaneia QR Code</h5>
+                    <p class="text-muted">
+                        Cliente escaneia o QR Code com seu celular e o saldo é creditado automaticamente
+                    </p>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    <div class="step-number">3</div>
+                    <h5>Faz Compras</h5>
+                    <p class="text-muted">
+                        Nas barracas, cliente escaneia QR Code do produto, escolhe quantidade e confirma compra
+                    </p>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    <div class="step-number">4</div>
+                    <h5>Recebe Pedido</h5>
+                    <p class="text-muted">
+                        Barraca recebe o pedido em tempo real, prepara e entrega usando o número do pedido
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Vantagens do Sistema</h2>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-shield-check text-primary me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5>Seguro e Confiável</h5>
+                            <p class="text-muted">
+                                Tokens com assinatura digital e tempo de expiração. Controle total das transações.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-lightning text-warning me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5>Rápido e Prático</h5>
+                            <p class="text-muted">
+                                Elimina filas de troco, agiliza vendas e melhora a experiência do cliente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-graph-up text-success me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5>Controle Total</h5>
+                            <p class="text-muted">
+                                Relatórios em tempo real, histórico completo e gestão financeira integrada.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-wifi-off text-info me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5>Funciona Offline</h5>
+                            <p class="text-muted">
+                                Sistema local que não depende de internet externa, apenas rede Wi-Fi local.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-phone text-primary me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5>Mobile First</h5>
+                            <p class="text-muted">
+                                Interfaces otimizadas para celular, tablets e computadores. Funciona em qualquer dispositivo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-gear text-secondary me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5>Fácil de Configurar</h5>
+                            <p class="text-muted">
+                                Instalação simples em qualquer computador, sem necessidade de conhecimento técnico avançado.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-qr-code"></i> QRSaldo</h5>
+                    <p class="mb-0">Sistema de saldo via QR Code para eventos</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-3">
+                        <a href="/swagger" class="text-light">
+                            <i class="bi bi-code-slash"></i> API Docs
+                        </a>
+                        <a href="https://github.com" class="text-light">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function acessarBarraca() {
+            const barracaId = document.getElementById('barracaSelect').value;
+            if (barracaId) {
+                window.location.href = `/barraca/${barracaId}`;
+            } else {
+                alert('Por favor, selecione uma barraca primeiro.');
+            }
+        }
+
+        // Carregar barracas disponíveis
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/barracas');
+                const result = await response.json();
+                
+                if (result.sucesso && result.dados) {
+                    const select = document.getElementById('barracaSelect');
+                    select.innerHTML = '<option value="">Selecione uma barraca...</option>';
+                    
+                    result.dados.forEach(barraca => {
+                        const option = document.createElement('option');
+                        option.value = barraca.id;
+                        option.textContent = barraca.nome;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao carregar barracas:', error);
+            }
+        });
+    </script>
+</body>
+</html>
