@@ -4,6 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Version>1.0.0</Version>
+    <Authors>QRSaldo Team</Authors>
+    <Company>QRSaldo</Company>
+    <Product>QRSaldo</Product>
+    <Description>Sistema de controle de saldo via QR Code para quermesses e eventos</Description>
+    <Copyright>Copyright © 2025</Copyright>
+    <PackageProjectUrl>https://github.com/Raythan/qrsaldo</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
