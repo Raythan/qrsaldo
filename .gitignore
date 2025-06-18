@@ -48,8 +48,26 @@ Generated\ Files/
 
 # NUnit
 *.VisualState.xml
-TestResult.xml
-nunit-*.xml
+
+# QRSaldo - Arquivos específicos do projeto
+# Banco de dados SQLite (gerado automaticamente)
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de teste temporários
+test-*.json
+*-test.json
+temp-*.json
+
+# QR Codes gerados
+qrcode-*.png
+qr-*.png
+*.qr.png
+
+# Logs da aplicação
+logs/
+*.log
 
 # Build Results of an ATL Project
 [Dd]ebugPS/
